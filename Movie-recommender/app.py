@@ -1,6 +1,14 @@
 import streamlit as st
 import pickle
 import pandas as pd 
+import requests
+
+def fetch_poster (movie_id):
+    response = requests.get('https://api.themoviedb.org/3/movie/{}?api_key=8265bd1679663a7ea12ac168da84d2e8&language=en-US'.format(movie_id))
+    data = response.json()
+    return "https://image.tmdb.org/t/p/w500/" + data['poster_path']
+    
+
 
 movies_dict = pickle.load(open('movies_dict.pkl','rb'))
 similarity = pickle.load(open('similarity.pkl','rb'))
@@ -13,11 +21,13 @@ def recommend(movie):
     movies_list = sorted(list(enumerate(distances)),reverse=True,key=lambda x:x[1])[1:6]
     
     recommended_movies = []
+    recommended_movies_posters = []
 
     for i in movies_list:
         recommended_movies.append(movies.iloc[i[0]].title)
+        recommended_movies_posters.append(fetch_poster(movies.iloc[i[0]].movie_id))
 
-    return recommended_movies
+    return recommended_movies,recommended_movies_posters
 
 
 st.title("Movie Recommender system")
@@ -28,7 +38,14 @@ selected_movie_name = st.selectbox(
 )
 
 if st.button('Recommend'):
-    recommendations = recommend(selected_movie_name)
+    names,posters = recommend(selected_movie_name)
     # st.write(f"You selected {selected_movie_name}")
-    for i in recommendations:
-        st.write(i)
+    
+    cols = st.columns(5)
+
+    for i, col in enumerate(cols):
+        with col:
+            st.header(names[i])
+            st.image(posters[i])
+
+    
