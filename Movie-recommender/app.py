@@ -45,7 +45,7 @@ if st.button('Recommend'):
 
     for i, col in enumerate(cols):
         with col:
-            st.header(names[i])
+            st.text(names[i])
             st.image(posters[i])
 
     
