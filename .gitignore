@@ -1,0 +1,4 @@
+Movie-recommender/my-env/
+Movie-recommender/similarity.pkl
+*.pkl
+Movie-recommender/*.pkl
